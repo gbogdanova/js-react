@@ -5,16 +5,19 @@ const initialGameBoard = [
   [null, null, null],
   [null, null, null]
 ]
-export default function GameBoard () {
+export default function GameBoard ({changePlayer, activeSimbol}) {
   const [boardGame, setBoardGame] = useState(initialGameBoard);
 
   function handleBoardChange(indRow, indCol){
     setBoardGame( prevBord => {
       const updatedBoard = [...prevBord.map(inner => [...inner])];
-      updatedBoard[indRow][indCol] = 'X';
+      updatedBoard[indRow][indCol] = activeSimbol;
       return updatedBoard;
     })
+    console.log(activeSimbol);
+    changePlayer();
   }
+
   return (
     <ol id="game-board">
       {boardGame.map((row, indRow) => (
