@@ -5,6 +5,11 @@ import Log from "./components/Log";
 import WINNING_COMBINATIONS from "./winning-combinations";
 import GameOver from "./components/GameOver";
 
+const PLAYERS = {
+  X: 'Player 1',
+  O: 'Player 2'
+}
+
 const initialGameBoard = [
   [null, null, null],
   [null, null, null],
@@ -22,9 +27,11 @@ function playerManaging(gameTurn){
 
 function App() {
   const [gameTurn, setGameTurn] = useState([]);
+  const [players, setPlayers] = useState(PLAYERS);
+
   let activePlayer = playerManaging(gameTurn);
   
-  const boardGame = initialGameBoard;
+  const boardGame = [...initialGameBoard.map(arr => [...arr])];
   for (const turn of gameTurn){
     const {square, player} = turn;
     const {row, col} = square;
@@ -40,7 +47,7 @@ function App() {
     let thirdSimbol = boardGame[combination[2].row][combination[2].column];
 
     if(firstSimbol && firstSimbol === secondSimbol && firstSimbol === thirdSimbol){
-      winner = firstSimbol;
+      winner = players[firstSimbol];
     }
   }
 
@@ -52,17 +59,30 @@ function App() {
     })
   }
 
+  function handleChangeName(symbol, name){
+    setPlayers(prevPlayers => {
+      return {
+      ...prevPlayers,
+      [symbol]: name,
+    }})
+
+  }
+
+  function restartGame(){
+    setGameTurn([]);
+  }
+
 
   return (
     <main>
       <div id="game-container">
         <ol id="players" className="highlight-player">
-          <Player initialName="Player1" symbol="X" isActive={activePlayer === 'X'}/>
-          <Player initialName="Player2" symbol="O" isActive={activePlayer === 'O'}/>
+          <Player initialName={players.X} symbol="X" isActive={activePlayer === 'X'} handleName={handleChangeName}/>
+          <Player initialName={players.O} symbol="O" isActive={activePlayer === 'O'} handleName={handleChangeName}/>
         </ol>
         <GameBoard changeBoard={handlePlayerChange} board={boardGame}/>
       </div>
-      {(winner || !freeSquare) && <GameOver winner={winner}/>}
+      {(winner || !freeSquare) && <GameOver winner={winner} restart={restartGame}/>}
       <Log turns={gameTurn}/>
     </main>
   )
