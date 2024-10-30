@@ -25,22 +25,19 @@ function playerManaging(gameTurn){
   return currentPlayer;
 }
 
-function App() {
-  const [gameTurn, setGameTurn] = useState([]);
-  const [players, setPlayers] = useState(PLAYERS);
-
-  let activePlayer = playerManaging(gameTurn);
-  
+function driveBoard(gameTurn){
   const boardGame = [...initialGameBoard.map(arr => [...arr])];
   for (const turn of gameTurn){
     const {square, player} = turn;
     const {row, col} = square;
     boardGame[row][col] = player;
   }
-  
-  let winner = null;
-  let freeSquare = gameTurn.length < 9;
+  return boardGame;
+}
 
+function driveWinner(boardGame, players){
+  let winner = null;
+  
   for (let combination of WINNING_COMBINATIONS){
     let firstSimbol = boardGame[combination[0].row][combination[0].column];
     let secondSimbol = boardGame[combination[1].row][combination[1].column];
@@ -50,6 +47,18 @@ function App() {
       winner = players[firstSimbol];
     }
   }
+
+  return winner;
+}
+
+function App() {
+  const [gameTurn, setGameTurn] = useState([]);
+  const [players, setPlayers] = useState(PLAYERS);
+
+  let activePlayer = playerManaging(gameTurn);
+  let boardGame = driveBoard(gameTurn);
+  let winner = driveWinner(boardGame, players);
+  let freeSquare = gameTurn.length < 9;
 
   function handlePlayerChange(indRow, indCol){
     setGameTurn((prevTurn) => {
